@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Unlicense OR CC0-1.0
  */
 
+#include "hid_dev.h"
 #include "hidd_le_prf_int.h"
 #include <string.h>
 #include "esp_log.h"
@@ -24,6 +25,7 @@ struct prf_char_pres_fmt
 };
 
 // HID report mapping table
+//static hid_report_map_t hid_rpt_map[HID_NUM_REPORTS];
 static hid_report_map_t hid_rpt_map[HID_NUM_REPORTS];
 
 // HID Report Map characteristic value

@@ -139,10 +139,10 @@ void moveMouseToXY(uint16_t conn_id, int x2, int y2, int delay_ms )
     //esp_hidd_send_mouse_value( hid_conn_id,  0x00,  x1-deltaX,  y1-deltaY);// Buttons 0x00 — все кнопки отпущены; 0x01 — нажата левая кнопка; 0x02 — нажата правая кнопка; 0x04 — нажата средняя кнопка; 0x03 — нажаты левая и правая кнопки.		
     deltaX=x1;
     deltaY=y1;
-   // printf("x=%d:",x1);
-   // printf("deltaX=%d:",deltaX);
-   // printf("y=%d:",y1);
-   // printf("deltaY=%d\n",deltaY);
+    printf("x=%d:",x1);
+    printf("deltaX=%d:",deltaX);
+    printf("y=%d:",y1);
+    printf("deltaY=%d\n",deltaY);
     vTaskDelay(delay_ms / portTICK_PERIOD_MS);
         if (x1 == x2 && y1 == y2) break;
         int e2 = err * 2;
@@ -155,7 +155,7 @@ void moveMouseToXY(uint16_t conn_id, int x2, int y2, int delay_ms )
             y1 += sy;
         }
     }
-     printf("Move Complete");
+     printf("Move Completed\n");
 }
 
  void MouseClick(uint16_t conn_id, uint8_t mouse_button,uint8_t clickTimeDelay)

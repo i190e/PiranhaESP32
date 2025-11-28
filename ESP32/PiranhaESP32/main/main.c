@@ -71,7 +71,7 @@ fgets(bufferChars, sizeof(bufferChars), stdin);  // ввод с USB порта
 //vTaskDelay(400 / portTICK_PERIOD_MS);
 if(bufferChars[0]!=' ')
 {
-	printf("DataEcho:");
+	printf("CommandEcho:");
 for(int i=0;i<128;i++)
 {
 	if(bufferChars[i]=='\0'||bufferChars[i]=='\n')
@@ -84,19 +84,20 @@ for(int i=0;i<128;i++)
 	printf("\n");
 }
 //*********************************** время подтверждения проверки правильности  считывания данных  ************************** */
-if(bufferChars[0]!=' ')  
-{vTaskDelay(2000 / portTICK_PERIOD_MS);
 
-fgets(bufferChars, sizeof(bufferChars), stdin);  // ввод с USB порта  
-if(bufferChars[0]=='O'&&bufferChars[1]=='K')
-	{
-printf("DataVerified:");
+//if(bufferChars[0]!=' ')  
+//{
+//vTaskDelay(2000 / portTICK_PERIOD_MS);
 
-for(int i=0;i<128;i++)
+//fgets(bufferChars, sizeof(bufferChars), stdin);  // ввод с USB порта  
+//if(bufferChars[0]=='O'&&bufferChars[1]=='K')
+	//{
+
+/*for(int i=0;i<128;i++)
 		{				
 printf("%c ",commandChars[i]);	
 		}
-printf("\n");
+printf("\n");*/
 
 receivingCommand=decodingCommandCharArray(commandChars);
 
@@ -104,22 +105,23 @@ receivingCommand=decodingCommandCharArray(commandChars);
 	 {
 			if(receivingCommand.command==MOVE)
        	     {
-				moveMouseToXY( hid_conn_id,receivingCommand.x, receivingCommand.y,1);
+				moveMouseToXY( hid_conn_id,receivingCommand.x, receivingCommand.y,2);
 			 }
    			 else 	if(receivingCommand.command==CLICK)
   	  		 { 
 	      	MouseClick( hid_conn_id,  receivingCommand.mouseButton, 70);
 			 }
 	  }
-	}
+	//}
 for(int i=0;i<128;i++)
 {
 	commandChars[i] = ' ';
 	bufferChars[i]  = ' ';
 }	
-}
+printf("Waiting Command:\n");
+//}
 //*********************************** окончание подтверждения проверки правильности  считывания данных  ************************** */
-vTaskDelay(2000 / portTICK_PERIOD_MS);
+vTaskDelay(1000 / portTICK_PERIOD_MS);
 	  
 		}//********while************* */
 }
@@ -131,3 +133,5 @@ void app_main(void)
  uint16_t conn_id = app_init_main();
     xTaskCreate(&hid_demo_task, "hid_task", 10240, &conn_id, 5, NULL);
 }
+
+//mouse:move:-0009:-0452

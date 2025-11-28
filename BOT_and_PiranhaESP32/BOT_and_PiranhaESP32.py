@@ -1,48 +1,70 @@
 import serial
 import time
 import serial.tools.list_ports
+import SerialCommunication
+from random import randint
+import pyautogui
+from python_imagesearch.imagesearch import imagesearch,imagesearcharea
+import webbrowser
+import time
+import os
+from datetime import datetime
+from pynput.keyboard import Listener
 
+
+#define variable
+work_path =  os.path.dirname(os.path.abspath(__file__))+"\\" # add path to script
+
+PngPath = work_path+"png\\" # path to png ico # path to png ico
+
+CandyPod_Button=PngPath+"Candy.png"
 
 ports = list(serial.tools.list_ports.comports())
 for port in ports:
     print(f"Port: {port.device}, Description: {port.description}")
 
-# Configure serial connection
-ser = serial.Serial(
-    port='COM3',           # Replace with your port (e.g., '/dev/ttyUSB0' on Linux)
-    baudrate=115200,       # Common baud rate
-    timeout=1,             # Read timeout in seconds
-)
-delay_ms = 700
+portName="COM3"
+tryOpen=True
+openSerialPort = SerialCommunication.connectToPiranhaESP32(portName,tryOpen)
 
-#structure: mouse:move:+-x[4]:+-y[4] // mouse click [command]//example//mouse:move:+0100:+0150//mouse:click:DOUBLECLICK//
 
-try:
-    print("Serial port opened:", ser.name)
+def on_press(key):
+    return False  # ѕрекращает слушатель при любом нажатии
 
-    while True:
-        # Read a line (ends with \n or timeout)
-        message = "mouse:move:+0100:+0100"
-        dataVerified="OK"
-        ser.write(message.encode('utf-8'))
-        time.sleep(0.5)  # 0.075 с
-        line = ser.readline()     
-        if line:  # If data received
-            # Decode bytes to string (remove trailing whitespace/newline)
-            decoded_line = line.decode('utf-8').strip()
-            print(f"Received: {decoded_line}")
-            if(decoded_line=="DataEcho:"+message):
-                ser.write(dataVerified.encode('utf-8'))
-                time.sleep(15)  # 0.075 с       
-            # Write a response line back
-            #response = f"Echo: {decoded_line}\r\n"
-            #ser.write(response.encode('utf-8'))
-            print(f"Sent: {dataVerified}")
-        
-except KeyboardInterrupt:
-    print("Exiting...")
-except Exception as e:
-    print(f"Error: {e}")
-finally:
-    ser.close()
-    print("Serial port closed.")
+with Listener(on_press=on_press) as listener:
+    
+   while listener.running:
+
+    print("Activate This Window And\n")
+    print("Press Any Key On To Exit...")   
+    time.sleep(6)  # 6 с
+    posIco_Button = imagesearch(CandyPod_Button)
+
+    if (posIco_Button[0] != -1):
+        print(f"Image Found Koordinates: X={posIco_Button[0]}, Y={posIco_Button[1]}")
+    pos = pyautogui.position()
+    print(f"Koordinates Cursor: X={pos[0]}, Y={pos[1]}")
+
+    toIntMoveX=posIco_Button[0]-pos[0];
+    toIntMoveY=posIco_Button[1]-pos[1];
+    toMoveX="";
+    toMoveY="";
+
+    if(toIntMoveX<0):
+        toMoveX=str(toIntMoveX).zfill(5);
+    if(toIntMoveY<0):
+        toMoveY=str(toIntMoveY).zfill(5);
+
+    if(toIntMoveX>=0):
+        toMoveX="+"+str(toIntMoveX).zfill(4);
+    if(toIntMoveY>=0):
+        toMoveY="+"+str(toIntMoveY).zfill(4);
+
+    commandText="mouse:move:"+toMoveX+":"+toMoveY+"\0"
+    print(commandText)
+    print("\n")
+    print("Searching Image\n")
+    time.sleep(1)
+    SerialCommunication.sendCommand(commandText,openSerialPort)
+    
+openSerialPort.close()
